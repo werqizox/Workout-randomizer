@@ -1,0 +1,251 @@
+<!doctype html><html lang="hu"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090a0d"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Workout">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><title>Workout Randomizer</title>
+<style>
+:root{--bg:#07080b;--card:#111319;--card2:#191c24;--text:#f7f8fb;--muted:#8f96a5;--accent:#8b6cff;--green:#35d46b;--line:#262a34}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;padding-bottom:90px}.app{max-width:720px;margin:auto;padding:20px 16px}.title{font-size:36px;font-weight:950;letter-spacing:-1.5px}.hero{padding:20px;border-radius:24px;background:linear-gradient(145deg,#171526,#111319);border:1px solid #2a263e;margin:14px 0}.hero .eyebrow{font-size:11px;font-weight:900;letter-spacing:2px;color:var(--accent)}.hero h2{margin:5px 0 2px;font-size:28px}.hero p{margin:0;color:var(--muted)}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.chip{font-size:11px;font-weight:850;padding:7px 9px;border-radius:999px;background:var(--card2);color:#cdd1db}.sub,.muted,.tag{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin:12px 0}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.segment{display:flex;background:var(--card2);padding:3px;border-radius:13px;margin-top:8px}.segment button{flex:1;background:transparent;color:var(--muted);border:0;border-radius:10px;padding:10px 4px;font-weight:800}.segment button.active{background:var(--accent);color:#fff}.toggle{display:flex;justify-content:space-between;align-items:center;padding:8px 0}.switch{width:48px;height:29px;border:0;border-radius:20px;background:#3a3d45;padding:3px}.switch i{display:block;width:23px;height:23px;border-radius:50%;background:#fff;transition:.18s}.switch.on{background:var(--green)}.switch.on i{transform:translateX(19px)}button{font:inherit;color:inherit}.primary,.secondary{width:100%;border:0;border-radius:15px;padding:15px;font-weight:900}.primary{background:var(--accent);margin-top:8px}.secondary{background:var(--card2);margin-top:8px}.workout{display:none}.workout.show{display:block}.exercise{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}.exercise .grow{flex:1}.reroll{width:38px;height:38px;border:0;border-radius:12px;background:var(--card2);font-size:18px}.num{width:34px;height:34px;border-radius:50%;background:var(--card2);display:grid;place-items:center;font-weight:900}.exname{font-size:17px;font-weight:850}.buy,.cash{background:var(--card2);padding:15px;border-radius:18px;margin:10px 0}.buy b,.cash b{display:block;color:var(--muted);font-size:11px;letter-spacing:1px}.buy strong,.cash strong{font-size:22px}.page{display:none}.page.active{display:block}nav{position:fixed;bottom:0;left:0;right:0;background:rgba(12,13,17,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:7px 10px calc(7px + env(safe-area-inset-bottom));z-index:10}.navinner{max-width:720px;margin:auto;display:flex}.navbtn{flex:1;background:0;border:0;color:var(--muted);font-size:11px;font-weight:800;padding:7px}.navbtn.active{color:#fff}.navicon{display:block;font-size:20px}.modal,.empty{text-align:center;color:var(--muted);padding:30px}
+.target{font-size:10px;margin-left:5px;padding:4px 7px;border-radius:7px;background:#25202f;color:#d7ccff;font-weight:900}</style></head><body><div class="app">
+<div class="title">Workout Randomizer</div><div class="sub">Okos, véletlenszerű teljes testes köredzések.</div>
+
+<section id="home" class="page active">
+<div class="card"><div class="row"><b>Gyakorlatok</b><b id="countVal">6</b></div><div class="segment" id="countSeg"><button data-v="5">5</button><button class="active" data-v="6">6</button><button data-v="7">7</button><button data-v="8">8</button></div></div>
+<div class="card"><div class="row"><b>High intensity</b><b id="hiVal">2</b></div><div class="segment" id="hiSeg"><button data-v="1">1</button><button class="active" data-v="2">2</button><button data-v="3">3</button></div></div>
+<div class="card"><b>Intenzitás</b><div class="segment" id="diffSeg"><button data-v="easy">Easy</button><button class="active" data-v="medium">Medium</button><button data-v="hard">Hard</button><button data-v="beast">Beast</button></div></div>
+<div class="card"><div class="toggle"><span>Buy In</span><button class="switch on" id="buy"><i></i></button></div><div class="toggle"><span>Cash Out</span><button class="switch on" id="cash"><i></i></button></div></div><div class="card"><button class="secondary" id="avoid">🚫 Ma ne legyen</button></div>
+<button class="primary" id="generate">🎲 GENERATE WORKOUT</button><button class="secondary" id="surprise">✨ SURPRISE ME</button><div id="workout" class="workout"></div></section>
+
+<section id="history" class="page"><div class="card"><div class="row"><b>Edzéselőzmények</b><button class="secondary" style="width:auto" id="clear">Törlés</button></div></div><div class="card" id="historyList"></div></section>
+<section id="exercises" class="page"><div class="card"><b>Saját gyakorlat</b><input id="customName" placeholder="pl. Turkish Get Up"><select id="customCat"></select><button class="primary" id="add">+ HOZZÁADÁS</button></div><div class="card" id="customList"></div></section>
+</div>
+
+<nav><div class="navinner"><button class="navbtn active" data-page="home"><span class="navicon">🏋️</span>Workout</button><button class="navbtn" data-page="history"><span class="navicon">📜</span>History</button><button class="navbtn" data-page="exercises"><span class="navicon">➕</span>Exercises</button></div></nav>
+
+<div class="modal" id="avoidModal"><div class="sheet"><h2>🚫 Ma ne legyen</h2><div id="avoidList"></div><button class="primary" id="closeAvoid">Kész</button></div></div>
+<script>
+const extraExercises=[{"name": "Hand Release Push Up", "cat": "upper", "equipment": [], "outside": true, "outside_only": false}, {"name": "Renegade Row", "cat": "upper", "equipment": ["kettlebell"], "outside": false, "outside_only": false}, {"name": "Hip Extension", "cat": "core", "equipment": [], "outside": true, "outside_only": false}, {"name": "Thruster", "cat": "lower", "equipment": ["kettlebell"], "outside": false, "outside_only": false}, {"name": "1-Handed KB Swing", "cat": "hi", "equipment": ["kettlebell"], "outside": false, "outside_only": false}, {"name": "Mountain Climber", "cat": "hi", "equipment": [], "outside": true, "outside_only": false}, {"name": "Run", "cat": "hi", "equipment": [], "outside": true, "outside_only": true}, {"name": "Sprint", "cat": "hi", "equipment": [], "outside": true, "outside_only": true}, {"name": "Side Plank", "cat": "static", "equipment": [], "outside": true, "outside_only": false}, {"name": "Plank Kettlebell Drag", "cat": "core", "equipment": ["kettlebell"], "outside": false, "outside_only": false}];
+const cats={upperPull:"Upper • Pull",upperPush:"Upper • Push",lowerQuad:"Lower • Quad",lowerPosterior:"Lower • Posterior",hiHard:"HI • Hard",hiMedium:"HI • Medium",core:"Core",static:"Static"};
+const base=[["Pull up","upperPull"],["Chin up","upperPull"],["Tolódzkodás","upperPush"],["Push up","upperPush"],["Push press","upperPush"],["Battle rope","hiMedium"],["Lateral KB lunge","lowerQuad"],["Box step up","lowerQuad"],["Pistol squat","lowerQuad"],["Goblet squat","lowerQuad"],["Deadlift","lowerPosterior"],["Heavy squat","lowerQuad"],["Slam ball","hiMedium"],["Burpee","hiHard"],["Box jump","hiHard"],["Wall ball","hiMedium"],["Jump rope","hiMedium"],["Row","hiHard"],["Swing","hiMedium"],["American swing","hiMedium"],["Air bike","hiHard"],["Wall sit","static"],["Plank","static"],["Sit up","core"],["Leg raise","core"],["KB halo","core"],["Russian twist","core"],["Sitting KB twist","core"],["Kneeling KB chop","core"],["Banded rotation","core"]].map(x=>({name:x[0],cat:x[1]}));
+const buyIns=["500 m Row","50 Jump Rope","10 Burpee","15 Wall Ball","20 KB Swing","30 Slam Ball"],cashOuts=["500 m Row","20 Burpee","30 Slam Ball","40 KB Swing","1 min Air Bike","2 min Jump Rope","30 Wall Ball"];
+let S={location:"gym",count:6,hi:2,diff:"medium",buy:true,cash:true,avoid:[],custom:JSON.parse(localStorage.wrCustom||"[]"),history:JSON.parse(localStorage.wrHistory||"[]"),workout:null};
+const rand=a=>a[Math.floor(Math.random()*a.length)], shuffle=a=>[...a].sort(()=>Math.random()-.5);
+function seg(id,key,num=false){document.querySelectorAll("#"+id+" button").forEach(b=>b.onclick=()=>{S[key]=num?+b.dataset.v:b.dataset.v;document.querySelectorAll("#"+id+" button").forEach(x=>x.classList.remove("active"));b.classList.add("active");let v=document.getElementById(key+"Val");if(v)v.textContent=S[key]})}
+seg("countSeg","count",true);seg("hiSeg","hi",true);seg("diffSeg","diff");
+["buy","cash"].forEach(k=>document.getElementById(k).onclick=()=>{S[k]=!S[k];document.getElementById(k).classList.toggle("on",S[k])});
+document.getElementById("avoid").onclick=()=>document.getElementById("avoidModal").classList.add("show");document.getElementById("closeAvoid").onclick=()=>document.getElementById("avoidModal").classList.remove("show");
+function renderAvoid(){document.getElementById("avoidList").innerHTML=Object.entries(cats).map(([k,v])=>`<div class="check">${v}<button class="switch ${S.avoid.includes(k)?"on":""}" onclick="avoidCat('${k}',this)"><i></i></button></div>`).join("")}
+window.avoidCat=(k,b)=>{S.avoid.includes(k)?S.avoid=S.avoid.filter(x=>x!==k):S.avoid.push(k);b.classList.toggle("on")};renderAvoid();
+function exerciseMeta(name,cat){
+const M={
+"Pull up":{groups:["back","biceps","grip"],pattern:"pull",fat:4},
+"Chin up":{groups:["back","biceps","grip"],pattern:"pull",fat:4},
+"Tolódzkodás":{groups:["chest","triceps","shoulder"],pattern:"push",fat:4},
+"Push up":{groups:["chest","triceps","shoulder"],pattern:"push",fat:3},
+"Push press":{groups:["shoulder","triceps","legs"],pattern:"push",fat:4},
+"Battle rope":{groups:["shoulder","arms","conditioning"],pattern:"cyclic",fat:3},
+"Lateral KB lunge":{groups:["quads","glutes","adductors"],pattern:"lunge",fat:3},
+"Box step up":{groups:["quads","glutes"],pattern:"step",fat:3},
+"Pistol squat":{groups:["quads","glutes","core"],pattern:"squat",fat:4},
+"Goblet squat":{groups:["quads","glutes","core"],pattern:"squat",fat:3},
+"Deadlift":{groups:["hamstrings","glutes","back","grip"],pattern:"hinge",fat:5},
+"Heavy squat":{groups:["quads","glutes","core"],pattern:"squat",fat:5},
+"Slam ball":{groups:["full","core","shoulder"],pattern:"power",fat:4},
+"Burpee":{groups:["full","chest","legs"],pattern:"burpee",fat:5},
+"Box jump":{groups:["quads","glutes","calves"],pattern:"jump",fat:5},
+"Wall ball":{groups:["quads","glutes","shoulder"],pattern:"squat_throw",fat:4},
+"Jump rope":{groups:["calves","shoulder","conditioning"],pattern:"cyclic",fat:3},
+"Row":{groups:["back","legs","grip","conditioning"],pattern:"cyclic",fat:5},
+"Swing":{groups:["hamstrings","glutes","grip"],pattern:"hinge_power",fat:4},
+"American swing":{groups:["hamstrings","glutes","shoulder","grip"],pattern:"hinge_power",fat:5},
+"Air bike":{groups:["legs","conditioning"],pattern:"cyclic",fat:5},
+"Wall sit":{groups:["quads","glutes"],pattern:"static",fat:2},
+"Plank":{groups:["core"],pattern:"static",fat:2},
+"Sit up":{groups:["core"],pattern:"flexion",fat:2},
+"Leg raise":{groups:["core","hip_flexor"],pattern:"flexion",fat:3},
+"KB halo":{groups:["shoulder","core"],pattern:"rotation",fat:2},
+"Russian twist":{groups:["core","oblique"],pattern:"rotation",fat:2},
+"Sitting KB twist":{groups:["core","oblique"],pattern:"rotation",fat:2},
+"Kneeling KB chop":{groups:["core","oblique","shoulder"],pattern:"rotation",fat:2},
+"Banded rotation":{groups:["core","oblique"],pattern:"rotation",fat:1}
+};
+return M[name]||({groups:cat.startsWith("upper")?["upper"]:cat.startsWith("lower")?["lower"]:cat.startsWith("hi")?["conditioning"]:["core"],pattern:cat,fat:2});
+}
+function generate(){
+let pool=[...base,...S.custom,...extraExercises].filter(e=>isOutsideAllowed(e)&&!S.avoid.includes(e.cat));
+const recent=new Set(S.history.slice(0,4).flatMap(w=>w.exercises.map(e=>e.name)));
+let structures;
+if(S.count===5) structures=[
+["upperPull","lowerQuad","hiMedium","core","upperPush"],
+["lowerQuad","upperPush","hiHard","static","upperPull"],
+["upperPush","lowerPosterior","hiMedium","core","upperPull"],
+["upperPull","hiMedium","lowerQuad","static","upperPush"]
+];
+else if(S.count===6) structures=[
+["upperPull","lowerQuad","hiHard","core","upperPush","lowerPosterior"],
+["lowerQuad","upperPush","hiMedium","static","upperPull","lowerPosterior"],
+["upperPush","lowerPosterior","hiHard","core","upperPull","lowerQuad"],
+["upperPull","hiMedium","lowerQuad","static","upperPush","lowerPosterior"],
+["lowerQuad","upperPull","hiMedium","core","upperPush","hiHard"]
+];
+else structures=[
+["upperPull","lowerQuad","hiHard","core","upperPush","lowerPosterior","hiMedium","static"],
+["lowerQuad","upperPush","hiMedium","static","upperPull","lowerPosterior","hiHard","core"],
+["upperPull","lowerPosterior","hiMedium","core","lowerQuad","upperPush","hiHard","static"]
+];
+
+let slots=shuffle(structures).find(s=>true).slice(0,S.count);
+if(["easy","medium"].includes(S.diff))slots=slots.map(x=>x==="hiHard"?"hiMedium":x);
+
+let hiCount=0;
+slots=slots.map(x=>{
+ if(x.startsWith("hi")){hiCount++; return hiCount<=S.hi?x:"core";}
+ return x;
+});
+while(hiCount<S.hi){
+ const idx=slots.findIndex(x=>!x.startsWith("hi")&&!["core","static"].includes(x));
+ if(idx<0)break;
+ slots[idx]=S.diff==="easy"?"hiMedium":"hiHard";hiCount++;
+}
+slots=slots.map(x=>S.avoid.includes(x)?"core":x);
+
+const chosen=[], used=new Set();
+function scoreCandidate(e,slotIndex){
+ const m=exerciseMeta(e.name,e.cat), prev=chosen.at(-1), prev2=chosen.at(-2);
+ let score=Math.random()*5;
+ if(recent.has(e.name))score-=9; // változatosság
+ if(used.has(e.name))return -999;
+ if(e.cat!==slots[slotIndex])score-=30;
+
+ // Recovery / contrast: ugyanaz a fő terület egymás után erősen büntetve.
+ for(const [prevEx,weight] of [[prev,8],[prev2,3]]){
+   if(!prevEx)continue;
+   const pm=exerciseMeta(prevEx.name,prevEx.cat);
+   const overlap=m.groups.filter(g=>pm.groups.includes(g)).length;
+   score-=overlap*weight;
+   if(m.pattern===pm.pattern)score-=weight*0.9;
+   if(m.groups.includes("grip")&&pm.groups.includes("grip"))score-=weight*0.7;
+ }
+ // HI után kifejezetten recovery jellegű slot legyen előnyben.
+ if(prev&&exerciseMeta(prev.name,prev.cat).fat>=5){
+   if(["core","static"].includes(e.cat))score+=12;
+   if(e.cat.startsWith("hi"))score-=12;
+   if(m.fat>=5)score-=6;
+ }
+ // Nagy alsótest terhelés után ne azonnal újabb nagy alsótest.
+ if(prev){
+   const pm=exerciseMeta(prev.name,prev.cat);
+   const lowerOverlap=m.groups.filter(g=>["quads","glutes","hamstrings","calves","adductors"].includes(g)&&pm.groups.includes(g)).length;
+   if(lowerOverlap)score-=lowerOverlap*5;
+ }
+ // Pull és push között jó kontraszt.
+ if(prev){
+   const pp=exerciseMeta(prev.name,prev.cat).pattern;
+   if((pp==="pull"&&m.pattern==="push")||(pp==="push"&&m.pattern==="pull"))score+=5;
+ }
+ // Core/static recovery gyakorlatokat HI után preferáljuk, de ne legyen mindig ugyanaz.
+ if(prev&&prev.cat.startsWith("hi")){
+   if(["core","static"].includes(e.cat))score+=10;
+   if(e.cat.startsWith("upper")||e.cat.startsWith("lower"))score+=2;
+ }
+ // Easy módban a nagyon fárasztó mozgások kevésbé valószínűek.
+ if(S.diff==="easy"&&m.fat>=5)score-=7;
+ if(S.diff==="hard"&&m.fat>=4)score+=2;
+ if(S.diff==="beast"&&m.fat>=4)score+=5;
+ return score;
+}
+
+for(let i=0;i<slots.length;i++){
+ let candidates=pool.filter(e=>isOutsideAllowed(e)&&e.cat===slots[i]&&!used.has(e.name));
+ if(!candidates.length)candidates=pool.filter(e=>!used.has(e.name));
+ let scored=candidates.map(e=>({e,s:scoreCandidate(e,i)})).sort((a,b)=>b.s-a.s);
+ // Top 3 közül választunk: így intelligens, de továbbra is random.
+ let top=scored.slice(0,Math.min(3,scored.length));
+ let pick=rand(top).e;
+ chosen.push(pick);used.add(pick.name);
+}
+
+S.workout={date:new Date().toISOString(),difficulty:S.diff,exercises:chosen,buy:S.buy?rand(buyIns):null,cash:S.cash?rand(cashOuts):null};
+renderWorkout()
+}
+
+function isOutsideAllowed(e){
+ if(S.location!=="outside") return !(e.outside_only);
+ const eq=e.equipment||[];
+ return eq.length===0 || eq.includes("jump_rope") || eq.includes("rubber_band");
+}
+function exerciseTarget(e,diff){
+ const n=(e.name||"").toLowerCase();
+ if(n==="row"||n==="air bike"){
+  const r={easy:[8,10],medium:[10,14],hard:[14,18],beast:[18,25]}[diff]||[10,14];
+  return Math.round(r[0]+Math.random()*(r[1]-r[0]))+" CAL";
+ }
+ if(n==="run") return ({easy:400,medium:600,hard:800,beast:1000}[diff]||600)+" M";
+ if(n==="sprint") return ({easy:100,medium:150,hard:200,beast:250}[diff]||150)+" M";
+ return "";
+}
+function lastUsed(name){
+ let best=null,now=Date.now();
+ (S.history||[]).forEach(w=>(w.exercises||[]).forEach(e=>{
+  if(e.name===name){let d=now-new Date(w.date).getTime();if(best===null||d<best)best=d;}
+ }));
+ if(best===null)return "";
+ let days=Math.floor(best/86400000);
+ return days===0?"today":days===1?"yesterday":days+" days ago";
+}
+
+function workoutType(w){
+ const hi=w.exercises.filter(e=>e.cat.startsWith("hi")).length;
+ const push=w.exercises.filter(e=>exerciseMeta(e.name,e.cat).pattern==="push").length;
+ const pull=w.exercises.filter(e=>exerciseMeta(e.name,e.cat).pattern==="pull").length;
+ const lower=w.exercises.filter(e=>e.cat.startsWith("lower")).length;
+ if(hi>=3)return ["ENGINE + CONDITIONING","Pörgős, magas intenzitású teljes testes edzés"];
+ if(push&&pull&&lower)return ["FULL BODY + BALANCE","Kiegyensúlyozott teljes testes terhelés"];
+ if(lower>=3)return ["LOWER + POWER","Lábdomináns, erő- és teljesítményfókusz"];
+ return ["HYBRID","Erő, állóképesség és core kombinációja"];
+}
+function renderWorkout(){
+ let w=S.workout, wt=workoutType(w);
+ let h=`<div class="hero"><div class="eyebrow">${wt[0]}</div><h2>${w.exercises.length} EXERCISES</h2><p>${wt[1]}</p><div class="chips"><span class="chip">${w.difficulty.toUpperCase()}</span><span class="chip">${w.exercises.filter(e=>e.cat.startsWith("hi")).length} HI</span><span class="chip">${w.exercises.filter(e=>e.cat==="core").length} CORE</span><span class="chip">${w.exercises.filter(e=>e.cat==="static").length} STATIC</span></div></div>`;
+ if(w.buy)h+=`<div class="buy"><b>BUY IN</b><strong>${w.buy}</strong></div>`;
+ h+=`<div class="card"><div class="muted"><b>MAIN WORKOUT</b></div>`;
+ w.exercises.forEach((e,i)=>h+=`<div class="exercise"><div class="num">${i+1}</div><div class="grow"><div class="exname">${e.name}${exerciseTarget(e,w.difficulty)?` <span class="target">${exerciseTarget(e,w.difficulty)}</span>`:""}</div><div class="tag">${cats[e.cat]}${lastUsed(e.name)?` · last used ${lastUsed(e.name)}`:""}</div></div><button class="reroll" onclick="rerollOne(${i})">↻</button></div>`);
+ h+=`</div>`;
+ if(w.cash)h+=`<div class="cash"><b>CASH OUT</b><strong>${w.cash}</strong></div>`;
+ h+=`<button class="primary" onclick="saveWorkout()">✓ SAVE WORKOUT</button><button class="secondary" onclick="generate()">🎲 REROLL WHOLE WORKOUT</button>`;
+ let el=document.getElementById("workout");el.innerHTML=h;el.classList.add("show");
+}
+window.rerollOne=function(i){
+ const old=S.workout.exercises[i], used=new Set(S.workout.exercises.map(e=>e.name));used.delete(old.name);
+ const pool=[...base,...S.custom,...extraExercises].filter(e=>e.cat===old.cat&&!used.has(e.name)&&!S.avoid.includes(e.cat));
+ if(!pool.length)return;
+ const scored=pool.map(e=>{
+   let s=Math.random()*4,m=exerciseMeta(e.name,e.cat);
+   for(const j of [i-1,i+1]){const p=S.workout.exercises[j];if(!p)continue;const pm=exerciseMeta(p.name,p.cat);s-=m.groups.filter(g=>pm.groups.includes(g)).length*6;if(m.pattern===pm.pattern)s-=5;if(m.groups.includes("grip")&&pm.groups.includes("grip"))s-=4}
+   if(i>0&&S.workout.exercises[i-1].cat.startsWith("hi")&&["core","static"].includes(e.cat))s+=8;
+   return {e,s};
+ }).sort((a,b)=>b.s-a.s);
+ S.workout.exercises[i]=rand(scored.slice(0,Math.min(3,scored.length))).e;renderWorkout();
+};
+document.getElementById("generate").onclick=generate;
+document.getElementById("surprise").onclick=()=>{
+ S.count=rand([5,6,7,8]);S.location=rand(["gym","outside"]);S.hi=rand([1,2,3]);S.diff=rand(["easy","medium","hard","beast"]);S.buy=Math.random()>.2;S.cash=Math.random()>.2;
+ document.querySelectorAll("#countSeg button").forEach(b=>b.classList.toggle("active",+b.dataset.v===S.count));
+ document.querySelectorAll("#hiSeg button").forEach(b=>b.classList.toggle("active",+b.dataset.v===S.hi));
+ document.querySelectorAll("#diffSeg button").forEach(b=>b.classList.toggle("active",b.dataset.v===S.diff));document.querySelectorAll("#locationSeg button").forEach(b=>b.classList.toggle("active",b.dataset.v===S.location));
+ document.getElementById("countVal").textContent=S.count;document.getElementById("hiVal").textContent=S.hi;
+ document.getElementById("buy").classList.toggle("on",S.buy);document.getElementById("cash").classList.toggle("on",S.cash);generate();
+};
+window.saveWorkout=()=>{S.history.unshift(S.workout);S.history=S.history.slice(0,100);localStorage.wrHistory=JSON.stringify(S.history);renderHistory();};
+window.repeatWorkout=function(i){S.workout=JSON.parse(JSON.stringify(S.history[i]));renderWorkout();window.scrollTo({top:0,behavior:"smooth"});};
+function renderHistory(){
+ let e=document.getElementById("historyList");
+ e.innerHTML=S.history.length?S.history.map(w=>{const wt=workoutType(w);return `<div class="historyItem"><div class="row"><b>${new Date(w.date).toLocaleDateString("hu-HU")}</b><span class="mini">${w.difficulty.toUpperCase()}</span></div><div class="muted">${wt[0]}</div><div class="historyMeta">${w.exercises.map(x=>`<span class="mini">${x.name}</span>`).join("")}</div><button class="secondary" onclick="repeatWorkout(${i})">▶ REPEAT</button></div>`}).join(""):'<div class="empty">Még nincs mentett edzés.</div>';
+}
+document.getElementById("clear").onclick=()=>{S.history=[];localStorage.removeItem("wrHistory");renderHistory()};renderHistory();
+document.getElementById("customCat").innerHTML=Object.entries(cats).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+function renderCustom(){let e=document.getElementById("customList");e.innerHTML=S.custom.length?S.custom.map((x,i)=>`<div class="historyItem"><b>${x.name}</b><div class="muted">${cats[x.cat]}</div><button class="secondary" onclick="delCustom(${i})">Törlés</button></div>`).join(""):'<div class="empty">Még nincs saját gyakorlat.</div>'}
+window.delCustom=i=>{S.custom.splice(i,1);localStorage.wrCustom=JSON.stringify(S.custom);renderCustom()};document.getElementById("add").onclick=()=>{let n=document.getElementById("customName").value.trim(),c=document.getElementById("customCat").value;if(n){S.custom.push({name:n,cat:c});localStorage.wrCustom=JSON.stringify(S.custom);document.getElementById("customName").value="";renderCustom()}};renderCustom();
+document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>{document.querySelectorAll(".navbtn").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(b.dataset.page).classList.add("active")});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script></body></html>
